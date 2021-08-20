@@ -183,7 +183,7 @@ class MethodTimerTransform extends Transform {
      * @return
      */
     static boolean filterClass(String name) {
-        println("filterClass: "+ name)
+        println("filterClass: " + name)
         return (name.endsWith(".class")
                 && !name.startsWith("R\$")
                 && !name.contains(StatisticPlugin.statisticExtension.impl.replace(".", "/"))
