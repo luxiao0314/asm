@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="asm-demo" module="plugin_statistic" revision="unspecified" status="integration" publication="20210820114232"/>
+  <info organisation="asm-demo" module="plugin_statistic" revision="unspecified" status="integration" publication="20210820115520"/>
   <configurations>
     <conf name="annotationProcessor" visibility="private"/>
     <conf name="apiElements" visibility="private" extends="runtime"/>

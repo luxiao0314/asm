@@ -2,6 +2,7 @@ package com.example.plugin.statistic.mt
 
 import com.example.plugin.statistic.StatisticPlugin
 import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.commons.AdviceAdapter
 
@@ -15,21 +16,33 @@ class MethodTimerAdapter extends AdviceAdapter {
     String className
     String methodName
     String desc
-    String impl = StatisticPlugin.statisticExtension.impl.replace(".","/")
+    String impl = StatisticPlugin.statisticExtension.impl.replace(".", "/")
+    boolean isNull = false
 
     MethodTimerAdapter(int api, MethodVisitor methodVisitor, String owner, int access, String name, String desc) {
         super(api, methodVisitor, access, name, desc)
         this.className = owner
         this.methodName = name
         this.desc = desc
+
+        def isInit = name == "<init>"
+        def isStaticInit = name == "<clinit>"
+        def isStatic = (access & ACC_STATIC) != 0
+
+        isNull = isStatic || isInit || isStaticInit
     }
 
     @Override
     protected void onMethodEnter() {
         super.onMethodEnter()
         if (isInject(className)) {
-            mv.visitLdcInsn("")
-//                mv.visitVarInsn(ALOAD, 0)//this
+
+            if (isNull) {
+                mv.visitInsn(ACONST_NULL)//null
+            } else {
+                mv.visitVarInsn(ALOAD, 0)//this
+            }
+
             mv.visitLdcInsn(className)//className
             mv.visitLdcInsn(methodName)//methodbName
             mv.visitLdcInsn(getArgsType(Type.getArgumentTypes(desc)))//argsTypes
@@ -52,8 +65,13 @@ class MethodTimerAdapter extends AdviceAdapter {
     @Override
     void onMethodExit(int opcode) {
         if (isInject(className)) {
-//                mv.visitVarInsn(ALOAD, 0)//this
-            mv.visitLdcInsn("")
+
+            if (isNull) {
+                mv.visitInsn(ACONST_NULL)//null
+            } else {
+                mv.visitVarInsn(ALOAD, 0)//this
+            }
+
             mv.visitLdcInsn(className)//className
             mv.visitLdcInsn(methodName)//methodbName
             mv.visitLdcInsn(getArgsType(Type.getArgumentTypes(desc)))//argsTypes
